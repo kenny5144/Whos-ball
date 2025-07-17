@@ -11,8 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kenny144.whosball",
-      "usesAppleSignIn":true
-
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -37,11 +36,11 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],[
+      ],
+      [
         "expo-apple-authentication"
-      ]
-   
-      
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
