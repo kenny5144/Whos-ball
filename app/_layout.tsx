@@ -1,39 +1,52 @@
-import { supabase } from "@/lib/superbase";
 import { Session } from "@supabase/supabase-js";
-import { Slot, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Slot, usePathname, useRouter } from "expo-router";
+import { useState } from "react";
 import "../global.css";
 
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const router = useRouter();
-  useEffect(() => {
-    // Get current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+  const pathname = usePathname();
 
-    // Listen to auth state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      }
-    );
-
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, []);
-  // if (session === undefined) {
-  //   // Still loading
-  //   return <SplashScreen />;
-  // }
   // useEffect(() => {
-  //   if (!session) {
-  //     router.replace("/(auth)/welcome"); // not logged in
-  //   } else {
-  //     router.replace("/(tabs)"); // logged in
+  //   let isMounted = true;
+
+  //   const init = async () => {
+  //     const { data } = await supabase.auth.getSession();
+  //     if (isMounted) setSession(data.session);
+
+  //     supabase.auth.onAuthStateChange((_event, session) => {
+  //       if (isMounted) setSession(session);
+  //     });
+  //   };
+
+  //   init();
+
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   if (session === undefined) return;
+
+  //   if (!session && pathname !== "/(auth)/welcome") {
+  //     router.replace("/(auth)/welcome");
   //   }
-  // }, [session]);
-  return <Slot />;
+
+  //   if (session && pathname === "/(auth)/welcome") {
+  //     router.replace("/onboarding");
+  //   }
+  //   if (session && pathname !== "/onboarding") {
+  //     router.replace("/onboarding");
+  //   }
+  // }, [session, pathname]);
+
+  // if (session === undefined) return null;
+
+  return (
+    // <BottomSheetModalProvider>
+    <Slot />
+    // </BottomSheetModalProvider>
+  );
 }

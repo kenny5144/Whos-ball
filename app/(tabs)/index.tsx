@@ -1,8 +1,15 @@
 import { supabase } from "@/lib/superbase";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, router } from "expo-router";
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { router } from "expo-router";
+import {
+  Image,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import PostFeed from "../component/PostFeed";
 
 export default function Index() {
   const signOut = async () => {
@@ -21,49 +28,49 @@ export default function Index() {
     >
       <SafeAreaView>
         <View className="flex flex-row justify-between">
+          <Image
+            source={require("@/assets/images/zoe.jpg")}
+            style={{ height: 10, width: 10 }}
+          />
+          <View className="flex flex-row ">
+            <TouchableOpacity
+              onPress={() => signOut()}
+              className="shadow p-3 rounded-full bg-white flex-row justify-center items-center w-16 mr-2 "
+            >
+              <Ionicons name="notifications-outline" size={30} color="black" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => signOut()}
+              className=" p-3 rounded-full bg-white flex-row justify-center items-center w-16 "
+            >
+              <Ionicons name="chatbubbles-outline" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View className="flex flex-row justify-between items-center">
+          <Text>Recently posted </Text>
           <TouchableOpacity
-            onPress={() => signOut()}
-            className="shadow p-3 rounded-full bg-white flex-row justify-center items-center w-16 "
+            // onPress={() => signOut()}
+            className=" p-3 rounded-full flex-row justify-center items-center w-16 "
           >
-            <Ionicons name="notifications-outline" size={30} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => signOut()}
-            className="shadow p-3 rounded-full bg-white flex-row justify-center items-center w-16 "
-          >
-            {/* <Image
-              source={require("../../assets/images/apple.svg")}
-              className="h-3 w-"
-            /> */}
-            <Ionicons name="notifications-outline" size={30} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => signOut()}
-            className=" p-3 rounded-full bg-white flex-row justify-center items-center w-16 "
-          >
-            <Ionicons name="chatbubbles-outline" size={30} color="black" />
+            <Ionicons name="filter-outline" size={30} color="black" />
+            <Text>Filter</Text>
           </TouchableOpacity>
         </View>
-        <View className="flex flex-row mt-10 ">
-          <Text className="text-lg">Discover </Text>
-          <Text className="text-lg">Favorites</Text>
-        </View>
-        {/* <FlatList data={} renderItem={{{item,index}}} */}
-        <Link href={"/welcome"}> welcome</Link>
-        <TouchableOpacity
+
+        {/* <TouchableOpacity
           onPress={() => signOut()}
           className="shadow p-3 rounded-full bg-white flex-row justify-center items-center "
         >
-          {/* <Image
-          source={require("../../assets/images/apple.svg")}
-          className="h-6 w-6"
-        /> */}
+         
 
           <Text className=" text-center text-gray-7  font-bold">
             <Ionicons name="log-out-outline" size={24} color="black" />
             Log out
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <PostFeed />
       </SafeAreaView>
     </LinearGradient>
   );

@@ -1,7 +1,13 @@
 import { supabase } from "@/lib/superbase";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { LinearGradient } from "expo-linear-gradient";
-import { GestureResponderEvent, View, ViewToken } from "react-native";
+import {
+  GestureResponderEvent,
+  Image,
+  TouchableOpacity,
+  View,
+  ViewToken,
+} from "react-native";
 import { WelcomeSliderTypes } from "../data/data";
 
 import { useRef, useState } from "react";
@@ -105,7 +111,7 @@ const Welcome = () => {
           feelings.
         </Text>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
           onPress={signIn}
           className="shadow p-3 rounded-full mb-10 bg-white flex-row justify-center items-center space-x-3"
         >
@@ -129,7 +135,7 @@ const Welcome = () => {
           <Text className="text-center text-gray-700 text-lg font-bold">
             Sign in with Apple
           </Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
