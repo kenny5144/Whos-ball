@@ -70,17 +70,17 @@ const Postitem = ({ item, index }: Props) => {
           <View className=" flex flex-row text-white ">
             <TouchableOpacity className="flex flex-row items-center justify-center">
               <Image
-                source={require("@/assets/images/like.jpeg")}
-                style={{ width: 24, height: 24 }}
+                source={require("@/assets/images/like.png")}
+                style={{ width: 24, height: 42 }}
               />
-              <Text className="text-xl text-white">t</Text>
+              <Text className="text-xl text-black">1</Text>
             </TouchableOpacity>
             <TouchableOpacity className="flex flex-row items-center justify-center ml-3">
               <Image
-                source={require("@/assets/images/dislike.jpeg")}
-                style={{ width: 24, height: 24 }}
+                source={require("@/assets/images/dislike.png")}
+                style={{ width: 24, height: 42 }}
               />
-              <Text className="text-xl text-white">d</Text>
+              <Text className="text-xl text-black">2</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="flex flex-row items-center ml-3"

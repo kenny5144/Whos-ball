@@ -1,10 +1,12 @@
 import { supabase } from "@/lib/superbase";
+import { FACEPP_API_KEY, FACEPP_API_SECRET } from "@env";
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+
 import {
   Alert,
   Image,
@@ -73,9 +75,6 @@ const Onboarding = () => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const base64data = reader.result?.toString().split(",")[1];
-
-        const FACEPP_API_KEY = "M6xKfMhn0E4J0EDHD7Ihorvb6TIJjJ6c";
-        const FACEPP_API_SECRET = "kgHZVWNtaKJZL3L2EK6PFCK--luLq7x-";
 
         const formBody = new URLSearchParams({
           api_key: FACEPP_API_KEY,
