@@ -4,12 +4,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import {
   GestureResponderEvent,
   Image,
+  TextInput,
   TouchableOpacity,
   View,
   ViewToken,
 } from "react-native";
 import { WelcomeSliderTypes } from "../data/data";
 
+import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import { Text } from "react-native";
 import Animated, { useSharedValue } from "react-native-reanimated";
@@ -18,6 +20,11 @@ import Pagination from "../component/Pagination";
 import Slideritem from "../component/Slideritem";
 
 const Welcome = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const signIn = async () => {
     console.log("this is for google");
   };
@@ -29,7 +36,6 @@ const Welcome = () => {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-      // Sign in via Supabase Auth.
       if (credential.identityToken) {
         const {
           error,
@@ -40,7 +46,8 @@ const Welcome = () => {
         });
         console.log(JSON.stringify({ error, user }, null, 2));
         if (!error) {
-          // User is signed in.
+          console.log("hi");
+          router.replace("/");
         }
       } else {
         throw new Error("No identityToken.");
@@ -53,6 +60,73 @@ const Welcome = () => {
       }
     }
   };
+  async function signUpOrSignIn() {
+    setLoading(true);
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      setLoading(false);
+      return;
+    }
+
+    if (!email.includes("@") || !email.includes(".")) {
+      alert("Please enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Attempt sign-up
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (error) {
+        if (error.message.includes("registered")) {
+          // Email exists -> sign in
+          const { error: signInError } = await supabase.auth.signInWithPassword(
+            {
+              email: email.trim().toLowerCase(),
+              password,
+            }
+          );
+
+          if (signInError) {
+            alert("Login failed. Wrong password?");
+          } else {
+            alert("Welcome back! Redirecting...");
+            router.replace("/onboarding");
+          }
+          return;
+        }
+
+        // Show other errors
+        alert(`Sign-up failed: ${error.message}`);
+        return;
+      }
+
+      // Successful sign-up
+      if (data.session) {
+        alert("Account created! Redirecting...");
+        router.replace("/onboarding");
+      } else {
+        alert("Check your email to confirm your account.");
+      }
+    } catch (err) {
+      alert("Unexpected error. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const [paginationIndex, setPaginationindex] = useState(0);
   const scrollX = useSharedValue(0);
   const viewabilityConfig = {
@@ -110,6 +184,30 @@ const Welcome = () => {
           No catfish. No lies. Verify who she really is — before you catch
           feelings.
         </Text>
+        <View>
+          <TextInput
+            className="border-4"
+            onChangeText={(text) => setEmail(text)}
+            value={email}
+            placeholder="email@address.com"
+            autoCapitalize={"none"}
+          />
+        </View>
+        <View>
+          <TextInput
+            className="border-4"
+            onChangeText={(text) => setPassword(text)}
+            value={password}
+            secureTextEntry
+            placeholder="Password"
+            autoCapitalize={"none"}
+          />
+        </View>
+        <View>
+          <TouchableOpacity onPress={() => signUpOrSignIn()}>
+            <Text>sign in </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           onPress={signIn}

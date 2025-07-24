@@ -1,45 +1,72 @@
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useMemo, useRef } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { postSliderTypes } from "../data/datapost";
+import React, { useRef } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ActionSheet, { ActionSheetRef } from "react-native-actions-sheet";
 import Comments from "./Comments";
+type Post = {
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  imageUri: string | undefined;
+  user_id: string;
+
+  profiles: {
+    username: string;
+  };
+};
 type Props = {
-  item: postSliderTypes;
+  item: Post;
   index: number;
 };
 const Postitem = ({ item, index }: Props) => {
-  const snapPoints = useMemo(() => ["25%", "50%"], []);
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const actionSheetRef = useRef<ActionSheetRef>(null);
   const openComments = () => {
-    bottomSheetRef.current?.snapToIndex(1);
+    actionSheetRef.current?.show();
   };
+  console.log(item.imageUri);
+
   return (
-    <View className="pb-5">
-      <Image
-        source={item.image}
-        style={{ width: 380, height: 600, borderRadius: 20 }}
-        // className="w- "
-      />
+    <View
+      style={{
+        marginBottom: 40,
+        margin: "auto",
+      }}
+    >
+      {item.imageUri && (
+        <Image
+          source={{ uri: item.imageUri }}
+          style={{
+            width: 380,
+            height: 600,
+            borderRadius: 20,
+            marginBottom: 10,
+          }}
+          contentFit="cover"
+        />
+      )}
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.0)"]}
-        // style={styles.background}
-        className="absolute h-[600px] w-[400px] rounded-3xl justify-between py-4 px-2"
+        style={styles.background}
+        // className="absolute  h-[600px] w-[380px] rounded-3xl justify-between py-4 px-2"
       >
-        <View className="bg-slate-500 w-1/2 rounded-full ml-2 flex flex-row">
+        {/* <View>
+          
+        </View> */}
+        <View className="bg-slate-500 w-1/2 rounded-full p-3 items-center flex flex-row">
           <Image
-            source={item.image}
-            style={{ width: 50, height: 50 }}
-            className="rounded-full"
+            source={{
+              uri: "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/3.jpg",
+            }}
+            style={{ width: 40, height: 40, borderRadius: 30 }}
           />
-          <Text className="items-center flex justify-center pl-2">
-            {item.name}
-          </Text>
+          <Text>{item.profiles?.username ?? "Unknown user"}</Text>
         </View>
-        <View className=" ">
-          <Text className="text-white">{item.Description}</Text>
-          <Text>{item.title}</Text>
+        <View className=" bg-white h-24">
+          <Text className="text-black">{item.title}</Text>
+          <Text className="text-black">{item.content}</Text>
           <View className=" flex flex-row text-white ">
             <TouchableOpacity className="flex flex-row items-center justify-center">
               <Image
@@ -59,15 +86,23 @@ const Postitem = ({ item, index }: Props) => {
               className="flex flex-row items-center ml-3"
               onPress={openComments}
             >
-              <Ionicons name="chatbubble-ellipses-outline" size={24} />
+              <Ionicons
+                name="chatbubble-ellipses-outline"
+                size={24}
+                color={"#fafafaff"}
+              />
               <Text className="text-xl text-white">c</Text>
             </TouchableOpacity>
           </View>
         </View>
       </LinearGradient>
-      <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
-        <Comments />
-      </BottomSheet>
+      <ActionSheet
+        gestureEnabled={true}
+        defaultOverlayOpacity={0.3}
+        ref={actionSheetRef}
+      >
+        <Comments postId={item.id} />
+      </ActionSheet>
     </View>
   );
 };
@@ -76,9 +111,11 @@ export default Postitem;
 const styles = StyleSheet.create({
   background: {
     position: "absolute",
-    height: 500,
-    width: 300,
-    padding: 20,
+    height: 630,
+    width: 380,
     borderRadius: 20,
+    justifyContent: "space-between",
+    display: "flex",
+    marginBottom: 10,
   },
 });

@@ -59,6 +59,8 @@ const Onboarding = () => {
     }
 
     const userId = (await supabase.auth.getUser()).data.user?.id;
+    console.log(userId);
+
     if (!userId) {
       Alert.alert("User not found", "Please log in again.");
       return;
@@ -110,19 +112,20 @@ const Onboarding = () => {
           return;
         }
         const { error: updateError } = await supabase
-          .from("users")
+          .from("profiles")
           .update({
             username: onboardingForm.userName,
             location: onboardingForm.location,
             gender: detectedGender,
+            has_onboarded: true,
           })
           .eq("id", userId);
 
         if (updateError) {
           Alert.alert("Update failed", updateError.message);
         } else {
-          Alert.alert("Submitted", "Your verification has been submitted.");
-          router.replace("/(tabs)");
+          // Alert.alert("Submitted", "Your verification has been submitted.");
+          router.replace("/");
         }
       };
 
@@ -130,6 +133,14 @@ const Onboarding = () => {
     } catch (err) {
       console.error("Verification Error:", err);
       Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  };
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error.message);
+    } else {
+      router.replace("/(auth)/welcome");
     }
   };
 
@@ -178,6 +189,12 @@ const Onboarding = () => {
           )}
         </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={signOut}
+          className="bg-amber-600 py-3 rounded-lg mb-4 items-center"
+        >
+          <Text className="text-white">signout</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={handleSubmit}
           className="bg-amber-600 py-3 rounded-lg mb-4 items-center"

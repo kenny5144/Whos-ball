@@ -1,12 +1,26 @@
 import { FlatList, StyleSheet, View } from "react-native";
-import { postSliderTypes } from "../data/datapost";
 import Postitem from "./Postitem";
-const PostFeed = () => {
+type Post = {
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  imageUri: string | undefined;
+  user_id: string;
+  profiles: {
+    username: string;
+  };
+};
+type PostFeedProps = {
+  Data: Post[];
+};
+const PostFeed = ({ Data }: PostFeedProps) => {
   return (
     <View>
       <FlatList
-        data={postSliderTypes}
+        data={Data}
         renderItem={({ item, index }) => <Postitem item={item} index={index} />}
+        scrollEnabled={true}
       />
     </View>
   );

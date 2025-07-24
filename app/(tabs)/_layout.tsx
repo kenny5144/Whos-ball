@@ -12,7 +12,10 @@ export default function Tabslayout() {
         name="create"
         options={{ title: "Create", headerShown: false }}
       />
-      <Tabs.Screen name="background" options={{ title: "Background" }} />
+      <Tabs.Screen
+        name="profile"
+        options={{ title: "Profile", headerShown: false }}
+      />
     </Tabs>
   );
 }

@@ -1,6 +1,7 @@
+import { supabase } from "@/lib/superbase";
 import { Session } from "@supabase/supabase-js";
 import { Slot, usePathname, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../global.css";
 
 export default function RootLayout() {
@@ -8,45 +9,51 @@ export default function RootLayout() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // useEffect(() => {
-  //   let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-  //   const init = async () => {
-  //     const { data } = await supabase.auth.getSession();
-  //     if (isMounted) setSession(data.session);
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (isMounted) setSession(data.session);
 
-  //     supabase.auth.onAuthStateChange((_event, session) => {
-  //       if (isMounted) setSession(session);
-  //     });
-  //   };
+      supabase.auth.onAuthStateChange((_event, session) => {
+        if (isMounted) setSession(session);
+      });
+    };
 
-  //   init();
+    init();
 
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-  // useEffect(() => {
-  //   if (session === undefined) return;
+  useEffect(() => {
+    if (session === undefined) return;
 
-  //   if (!session && pathname !== "/(auth)/welcome") {
-  //     router.replace("/(auth)/welcome");
-  //   }
+    if (!session && pathname !== "/(auth)/welcome") {
+      router.replace("/(auth)/welcome");
+      return;
+    }
 
-  //   if (session && pathname === "/(auth)/welcome") {
-  //     router.replace("/onboarding");
-  //   }
-  //   if (session && pathname !== "/onboarding") {
-  //     router.replace("/onboarding");
-  //   }
-  // }, [session, pathname]);
+    const checkOnboarding = async () => {
+      if (session) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("has_onboarded")
+          .eq("id", session.user.id)
+          .single();
 
-  // if (session === undefined) return null;
+        if (!profile?.has_onboarded && pathname !== "/onboarding") {
+          router.replace("/onboarding");
+        } else if (profile?.has_onboarded && pathname === "/onboarding") {
+          router.replace("/"); // home page
+        }
+      }
+    };
 
-  return (
-    // <BottomSheetModalProvider>
-    <Slot />
-    // </BottomSheetModalProvider>
-  );
+    checkOnboarding();
+  }, [session, pathname]);
+
+  return <Slot />;
 }

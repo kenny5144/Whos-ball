@@ -1,26 +1,65 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { PlatformPressable, Text } from "@react-navigation/elements";
 import { useLinkBuilder, useTheme } from "@react-navigation/native";
-import { View } from "react-native";
-
+import { useState } from "react";
+import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import TabBarButton from "./TabBarButton";
 export function Tab({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
   const { buildHref } = useLinkBuilder();
 
+  const [dimensions, setDimensions] = useState({ height: 20, width: 100 });
+  const buttonWidth = dimensions.width / state.routes.length;
+
+  const onTabBarLayout = (e: LayoutChangeEvent) => {
+    setDimensions({
+      height: e.nativeEvent.layout.height,
+      width: e.nativeEvent.layout.width,
+    });
+  };
+
+  const tabpositionX = useSharedValue(0);
+  const animatesStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: tabpositionX.value }],
+    };
+  });
+
   return (
-    <View style={{ flexDirection: "row" }}>
+    <View onLayout={onTabBarLayout} style={styles.tabbar}>
+      <Animated.View
+        style={[
+          animatesStyle,
+          {
+            position: "absolute",
+            backgroundColor: "#723FEB",
+            borderRadius: 30,
+            marginHorizontal: 12,
+            height: dimensions.height - 15,
+            width: buttonWidth - 25,
+          },
+        ]}
+      />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
-          options.tabBarLabel !== undefined
+          typeof options.tabBarLabel === "string"
             ? options.tabBarLabel
-            : options.title !== undefined
+            : typeof options.title === "string"
               ? options.title
               : route.name;
 
         const isFocused = state.index === index;
 
         const onPress = () => {
+          tabpositionX.value = withSpring(buttonWidth * index, {
+            duration: 1500,
+          });
+
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,
@@ -40,21 +79,34 @@ export function Tab({ state, descriptors, navigation }: BottomTabBarProps) {
         };
 
         return (
-          <PlatformPressable
-            href={buildHref(route.name, route.params)}
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarButtonTestID}
+          <TabBarButton
+            key={route.key}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={{ flex: 1 }}
-          >
-            <Text style={{ color: isFocused ? colors.primary : colors.text }}>
-              {label}
-            </Text>
-          </PlatformPressable>
+            isFocused={isFocused}
+            routeName={route.name}
+            color={isFocused ? "#f7f6f9" : "#222"}
+            label={label}
+          />
         );
       })}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  tabbar: {
+    position: "absolute",
+    bottom: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    marginHorizontal: 80,
+    paddingVertical: 15,
+    borderRadius: 35,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 10,
+    shadowOpacity: 0.1,
+  },
+});
